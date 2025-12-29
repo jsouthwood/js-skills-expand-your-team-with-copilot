@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
+  // Constants
+  const SCHOOL_NAME = "Mergington High School";
+
   // Activity categories with corresponding colors
   const activityTypes = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
@@ -900,14 +903,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function shareOnTwitter(activityName, description, schedule) {
     const url = getActivityUrl(activityName);
-    const text = `Check out ${activityName} at Mergington High School! ${description} - ${schedule}`;
+    const text = `Check out ${activityName} at ${SCHOOL_NAME}! ${description} - ${schedule}`;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
     window.open(twitterUrl, '_blank', 'width=600,height=400');
   }
 
   function shareViaEmail(activityName, description, schedule) {
     const url = getActivityUrl(activityName);
-    const subject = `Join me for ${activityName} at Mergington High School!`;
+    const subject = `Join me for ${activityName} at ${SCHOOL_NAME}!`;
     const body = `Hi!\n\nI wanted to share this activity with you:\n\n${activityName}\n${description}\n\nSchedule: ${schedule}\n\nLearn more here: ${url}`;
     const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
