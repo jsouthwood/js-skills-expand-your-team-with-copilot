@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
+  // Constants
+  const SCHOOL_NAME = "Mergington High School";
+
   // Activity categories with corresponding colors
   const activityTypes = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
@@ -552,6 +555,25 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
+      <div class="social-sharing">
+        <span class="share-label">Share:</span>
+        <button class="share-button facebook-share tooltip" data-activity="${name}" data-description="${details.description}" data-schedule="${formattedSchedule}" aria-label="Share on Facebook">
+          <span class="share-icon">📘</span>
+          <span class="tooltip-text">Share on Facebook</span>
+        </button>
+        <button class="share-button twitter-share tooltip" data-activity="${name}" data-description="${details.description}" data-schedule="${formattedSchedule}" aria-label="Share on Twitter">
+          <span class="share-icon">🐦</span>
+          <span class="tooltip-text">Share on Twitter</span>
+        </button>
+        <button class="share-button email-share tooltip" data-activity="${name}" data-description="${details.description}" data-schedule="${formattedSchedule}" aria-label="Share via Email">
+          <span class="share-icon">📧</span>
+          <span class="tooltip-text">Share via Email</span>
+        </button>
+        <button class="share-button copy-link tooltip" data-activity="${name}" aria-label="Copy link">
+          <span class="share-icon">🔗</span>
+          <span class="tooltip-text">Copy link to clipboard</span>
+        </button>
+      </div>
       <div class="activity-card-actions">
         ${
           currentUser
@@ -586,6 +608,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add event listeners for social sharing buttons
+    const facebookButton = activityCard.querySelector(".facebook-share");
+    const twitterButton = activityCard.querySelector(".twitter-share");
+    const emailButton = activityCard.querySelector(".email-share");
+    const copyLinkButton = activityCard.querySelector(".copy-link");
+
+    facebookButton.addEventListener("click", () => shareOnFacebook(name, details.description, formattedSchedule));
+    twitterButton.addEventListener("click", () => shareOnTwitter(name, details.description, formattedSchedule));
+    emailButton.addEventListener("click", () => shareViaEmail(name, details.description, formattedSchedule));
+    copyLinkButton.addEventListener("click", () => copyActivityLink(name));
 
     activitiesList.appendChild(activityCard);
   }
@@ -854,6 +887,58 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error signing up:", error);
     }
   });
+
+  // Social sharing functions
+  function getActivityUrl(activityName) {
+    // Create a URL that points to the main page with activity in the URL hash
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}#${encodeURIComponent(activityName)}`;
+  }
+
+  function shareOnFacebook(activityName, description, schedule) {
+    const url = getActivityUrl(activityName);
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(facebookUrl, '_blank', 'width=600,height=400');
+  }
+
+  function shareOnTwitter(activityName, description, schedule) {
+    const url = getActivityUrl(activityName);
+    const text = `Check out ${activityName} at ${SCHOOL_NAME}! ${description} - ${schedule}`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, '_blank', 'width=600,height=400');
+  }
+
+  function shareViaEmail(activityName, description, schedule) {
+    const url = getActivityUrl(activityName);
+    const subject = `Join me for ${activityName} at ${SCHOOL_NAME}!`;
+    const body = `Hi!\n\nI wanted to share this activity with you:\n\n${activityName}\n${description}\n\nSchedule: ${schedule}\n\nLearn more here: ${url}`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+  }
+
+  function copyActivityLink(activityName) {
+    const url = getActivityUrl(activityName);
+    
+    // Use the Clipboard API to copy the link
+    navigator.clipboard.writeText(url).then(() => {
+      showMessage('Link copied to clipboard!', 'success');
+    }).catch((error) => {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showMessage('Link copied to clipboard!', 'success');
+      } catch (err) {
+        showMessage('Failed to copy link. Please copy manually: ' + url, 'error');
+      }
+      document.body.removeChild(textArea);
+    });
+  }
 
   // Expose filter functions to window for future UI control
   window.activityFilters = {
