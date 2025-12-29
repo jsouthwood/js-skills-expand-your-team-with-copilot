@@ -25,6 +25,51 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
+  // Dark mode elements
+  const darkModeToggle = document.getElementById("dark-mode-toggle");
+  const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector(".icon") : null;
+  const darkModeText = darkModeToggle ? darkModeToggle.querySelector("span:not(.icon)") : null;
+
+  // Dark mode functionality
+  function initDarkMode() {
+    if (!darkModeToggle) return;
+    // Check if user has a saved preference
+    const savedMode = localStorage.getItem("darkMode");
+    if (savedMode === "enabled") {
+      enableDarkMode();
+    }
+  }
+
+  function enableDarkMode() {
+    document.body.classList.add("dark-mode");
+    if (darkModeIcon) darkModeIcon.textContent = "☀️";
+    if (darkModeText) darkModeText.textContent = "Light";
+    localStorage.setItem("darkMode", "enabled");
+  }
+
+  function disableDarkMode() {
+    document.body.classList.remove("dark-mode");
+    if (darkModeIcon) darkModeIcon.textContent = "🌙";
+    if (darkModeText) darkModeText.textContent = "Dark";
+    localStorage.setItem("darkMode", "disabled");
+  }
+
+  function toggleDarkMode() {
+    if (document.body.classList.contains("dark-mode")) {
+      disableDarkMode();
+    } else {
+      enableDarkMode();
+    }
+  }
+
+  // Event listener for dark mode toggle
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener("click", toggleDarkMode);
+  }
+
+  // Initialize dark mode on page load
+  initDarkMode();
+
   // Activity categories with corresponding colors
   const activityTypes = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
